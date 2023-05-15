@@ -1,0 +1,48 @@
+/*------------------------------------------------------------------------
+ * Cassandra Chaput
+ * 2/1/2023
+ * CSCI-P436
+ * xsh_run - this file contains the code for command run to internal functions
+ *------------------------------------------------------------------------
+ */
+
+#include <xinu.h>
+#include <shprototypes.h>
+#include <prodcons.h>
+
+void prodcons_wrapper(int argc, char* argv[]);
+
+sid32 sem;
+
+shellcmd xsh_run(int argc, char * argv[]){
+	sem = semcreate(0);	
+	//IF NUM ARGS TOO SMALL
+	if(argc < 2){
+                fprintf(stderr, "%s: not enough arguments\n", argv[0]);
+        }
+
+	//PRINT LIST OF AVAIL FUNCTIONS
+	if((argc == 1) || (strncmp(argv[1], "list", 4) == 0)){
+		printf("hello\n");
+		printf("list\n");
+		printf("prodcons\n");
+		return OK;
+	}
+	//DO HELLO
+	if(strncmp(argv[1], "hello", 13)==0){
+		resume(create((void *) xsh_hello, 4096, 20, "hello", 2, argc-1, &argv[1]));
+	}
+
+	//DO PRODCONS
+	if(strncmp(argv[0], "prodcons", 8)==0){
+		resume(create(prodcons_wrapper, 4096, 1, "prodcons", 2, argc-1, &argv[1]));
+	}
+	wait(sem);
+	return 0;
+}
+
+void prodcons_wrapper(int argc, char* argv[]){
+	xsh_prodcons(argc, argv);
+	signal(sem);
+}
+
