@@ -1,3 +1,8 @@
+** Cassandra Chaput **
+** Indiana University | Bloomington **
+** CSCI-P436 | Operating systems **
+** Spring 2023 **
+
 # Welcome to Xinu
 
 # Build instructions
